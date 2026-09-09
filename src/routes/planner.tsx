@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { ClipboardList, Loader2, Plus, Trash2 } from "lucide-react";
+import { CalendarPlus, ClipboardList, Loader2, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -103,6 +103,17 @@ function PlannerPage() {
       })),
     ]);
     toast.success(`Copied ${fresh.length} action item${fresh.length > 1 ? "s" : ""}.`);
+  };
+
+  const addToGoogleCalendar = (task: Task) => {
+    // All-day event: Google expects dates=YYYYMMDD/YYYYMMDD with an exclusive end date.
+    const [year, month, day] = task.deadline.split("-").map(Number);
+    const pad = (n: number) => String(n).padStart(2, "0");
+    const start = `${year}${pad(month)}${pad(day)}`;
+    const end = new Date(Date.UTC(year, month - 1, day + 1));
+    const endStr = `${end.getUTCFullYear()}${pad(end.getUTCMonth() + 1)}${pad(end.getUTCDate())}`;
+    const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(task.title)}&dates=${start}/${endStr}`;
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   const patch = (id: string, changes: Partial<Task>) =>
