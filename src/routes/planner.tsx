@@ -107,7 +107,7 @@ function PlannerPage() {
 
   const addToGoogleCalendar = (task: Task) => {
     // All-day event: Google expects dates=YYYYMMDD/YYYYMMDD with an exclusive end date.
-    const [year, month, day] = task.deadline.split("-").map(Number);
+    const [year, month, day] = task.deadline.split("-").map((n) => parseInt(n, 10));
     const pad = (n: number) => String(n).padStart(2, "0");
     const start = `${year}${pad(month)}${pad(day)}`;
     const end = new Date(Date.UTC(year, month - 1, day + 1));
