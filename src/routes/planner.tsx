@@ -193,15 +193,34 @@ function PlannerPage() {
                   <div key={task.id} className="rounded-xl border border-border bg-background p-3">
                     <div className="flex items-start justify-between gap-2">
                       <p className="min-w-0 text-sm font-medium text-foreground">{task.title}</p>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        aria-label="Delete task"
-                        className="shrink-0"
-                        onClick={() => setTasks(tasks.filter((t) => t.id !== task.id))}
-                      >
-                        <Trash2 className="size-4" />
-                      </Button>
+                      <div className="flex shrink-0 items-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label={
+                            task.deadline
+                              ? "Add to Google Calendar"
+                              : "Add a deadline to enable Add to Google Calendar"
+                          }
+                          title={
+                            task.deadline
+                              ? "Add to Google Calendar"
+                              : "Add a deadline first to enable this"
+                          }
+                          disabled={!task.deadline}
+                          onClick={() => addToGoogleCalendar(task)}
+                        >
+                          <CalendarPlus className="size-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label="Delete task"
+                          onClick={() => setTasks(tasks.filter((t) => t.id !== task.id))}
+                        >
+                          <Trash2 className="size-4" />
+                        </Button>
+                      </div>
                     </div>
                     <div className="mt-2 flex flex-wrap items-center gap-2">
                       <span
