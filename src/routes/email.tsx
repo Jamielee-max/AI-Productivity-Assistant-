@@ -68,6 +68,27 @@ function EmailPage() {
     }
   };
 
+  const isValidEmail = (value: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value.trim());
+
+  const sendEmail = () => {
+    if (!subject.trim() && !body.trim()) {
+      toast.error("Nothing to send yet — generate the email first.");
+      return;
+    }
+    const recipient = recipientInput.trim();
+    if (!isValidEmail(recipient)) {
+      toast.error(
+        "The recipient doesn't look like a valid email address. Update it before sending."
+      );
+      return;
+    }
+    const params = new URLSearchParams();
+    params.set("subject", subject);
+    params.set("body", body);
+    window.location.href = `mailto:${encodeURIComponent(recipient)}?${params.toString()}`;
+  };
+
   const copyAll = async () => {
     try {
       await navigator.clipboard.writeText(`Subject: ${subject}\n\n${body}`);
