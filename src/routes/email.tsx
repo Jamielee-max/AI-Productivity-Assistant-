@@ -153,9 +153,14 @@ function EmailPage() {
         <Card className="rounded-2xl">
           <CardHeader className="flex-row items-center justify-between gap-2 pb-3">
             <CardTitle className="text-base">Draft</CardTitle>
-            <Button variant="outline" size="sm" onClick={copyAll} disabled={!subject && !body}>
-              <Copy className="size-4" /> Copy
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={sendEmail} disabled={!subject && !body}>
+                <Send className="size-4" /> Send
+              </Button>
+              <Button variant="outline" size="sm" onClick={copyAll} disabled={!subject && !body}>
+                <Copy className="size-4" /> Copy
+              </Button>
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-1.5">
