@@ -76,7 +76,7 @@ function EmailPage() {
       toast.error("Nothing to send yet — generate the email first.");
       return;
     }
-    const recipient = recipient.trim();
+    const trimmedRecipient = recipient.trim();
     if (!isValidEmail(recipient)) {
       toast.error(
         "The recipient doesn't look like a valid email address. Update it before sending."
