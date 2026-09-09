@@ -33,19 +33,39 @@ export const Route = createFileRoute("/")({
 
 type Summary = { keyDecisions: string[]; actionItems: string[]; deadlines: string[] };
 
+type SectionVariant = "decision" | "action" | "deadline";
+
+const sectionVariants: Record<SectionVariant, { card: string; title: string }> = {
+  decision: {
+    card: "border-tint-decision-border bg-tint-decision",
+    title: "text-tint-decision-strong",
+  },
+  action: {
+    card: "border-tint-action-border bg-tint-action",
+    title: "text-tint-action-strong",
+  },
+  deadline: {
+    card: "border-tint-deadline-border bg-tint-deadline",
+    title: "text-tint-deadline-strong",
+  },
+};
+
 function EditableList({
   title,
   items,
   onChange,
+  variant,
 }: {
   title: string;
   items: string[];
   onChange: (next: string[]) => void;
+  variant: SectionVariant;
 }) {
+  const styles = sectionVariants[variant];
   return (
-    <Card className="rounded-2xl">
+    <Card className={`rounded-2xl border ${styles.card}`}>
       <CardHeader className="pb-3">
-        <CardTitle className="text-base">{title}</CardTitle>
+        <CardTitle className={`text-base ${styles.title}`}>{title}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-2">
         {items.length === 0 && (
@@ -55,6 +75,7 @@ function EditableList({
           <div key={i} className="flex items-center gap-2">
             <Input
               value={item}
+              className="border-tint-decision-border/60 bg-background"
               onChange={(e) => {
                 const next = [...items];
                 next[i] = e.target.value;
@@ -138,16 +159,19 @@ function SummarizerPage() {
         <div className="space-y-4">
           <EditableList
             title="Key Decisions"
+            variant="decision"
             items={summary?.keyDecisions ?? []}
             onChange={(keyDecisions) => update({ keyDecisions })}
           />
           <EditableList
             title="Action Items"
+            variant="action"
             items={summary?.actionItems ?? []}
             onChange={(actionItems) => update({ actionItems })}
           />
           <EditableList
             title="Deadlines"
+            variant="deadline"
             items={summary?.deadlines ?? []}
             onChange={(deadlines) => update({ deadlines })}
           />
