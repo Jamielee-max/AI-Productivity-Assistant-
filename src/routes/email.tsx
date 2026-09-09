@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Copy, Loader2, Sparkles } from "lucide-react";
+import { Copy, Loader2, Send, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -68,6 +68,27 @@ function EmailPage() {
     }
   };
 
+  const isValidEmail = (value: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value.trim());
+
+  const sendEmail = () => {
+    if (!subject.trim() && !body.trim()) {
+      toast.error("Nothing to send yet — generate the email first.");
+      return;
+    }
+    const trimmedRecipient = recipient.trim();
+    if (!isValidEmail(trimmedRecipient)) {
+      toast.error(
+        "The recipient doesn't look like a valid email address. Update it before sending."
+      );
+      return;
+    }
+    const params = new URLSearchParams();
+    params.set("subject", subject);
+    params.set("body", body);
+    window.location.href = `mailto:${encodeURIComponent(trimmedRecipient)}?${params.toString()}`;
+  };
+
   const copyAll = async () => {
     try {
       await navigator.clipboard.writeText(`Subject: ${subject}\n\n${body}`);
@@ -132,9 +153,14 @@ function EmailPage() {
         <Card className="rounded-2xl">
           <CardHeader className="flex-row items-center justify-between gap-2 pb-3">
             <CardTitle className="text-base">Draft</CardTitle>
-            <Button variant="outline" size="sm" onClick={copyAll} disabled={!subject && !body}>
-              <Copy className="size-4" /> Copy
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={sendEmail} disabled={!subject && !body}>
+                <Send className="size-4" /> Send
+              </Button>
+              <Button variant="outline" size="sm" onClick={copyAll} disabled={!subject && !body}>
+                <Copy className="size-4" /> Copy
+              </Button>
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-1.5">
