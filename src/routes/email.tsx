@@ -77,7 +77,7 @@ function EmailPage() {
       return;
     }
     const trimmedRecipient = recipient.trim();
-    if (!isValidEmail(recipient)) {
+    if (!isValidEmail(trimmedRecipient)) {
       toast.error(
         "The recipient doesn't look like a valid email address. Update it before sending."
       );
@@ -86,7 +86,7 @@ function EmailPage() {
     const params = new URLSearchParams();
     params.set("subject", subject);
     params.set("body", body);
-    window.location.href = `mailto:${encodeURIComponent(recipient)}?${params.toString()}`;
+    window.location.href = `mailto:${encodeURIComponent(trimmedRecipient)}?${params.toString()}`;
   };
 
   const copyAll = async () => {
