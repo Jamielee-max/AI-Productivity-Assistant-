@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { ClipboardList, Loader2, Plus, Trash2 } from "lucide-react";
+import { CalendarPlus, ClipboardList, Loader2, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -105,6 +105,20 @@ function PlannerPage() {
     toast.success(`Copied ${fresh.length} action item${fresh.length > 1 ? "s" : ""}.`);
   };
 
+  const addToGoogleCalendar = (task: Task) => {
+    // All-day event: Google expects dates=YYYYMMDD/YYYYMMDD with an exclusive end date.
+    const parts = task.deadline.split("-");
+    const year = parseInt(parts[0] ?? "0", 10);
+    const month = parseInt(parts[1] ?? "0", 10);
+    const day = parseInt(parts[2] ?? "0", 10);
+    const pad = (n: number) => String(n).padStart(2, "0");
+    const start = `${year}${pad(month)}${pad(day)}`;
+    const end = new Date(Date.UTC(year, month - 1, day + 1));
+    const endStr = `${end.getUTCFullYear()}${pad(end.getUTCMonth() + 1)}${pad(end.getUTCDate())}`;
+    const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(task.title)}&dates=${start}/${endStr}`;
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
   const patch = (id: string, changes: Partial<Task>) =>
     setTasks(tasks.map((t) => (t.id === id ? { ...t, ...changes } : t)));
 
@@ -179,15 +193,34 @@ function PlannerPage() {
                   <div key={task.id} className="rounded-xl border border-border bg-background p-3">
                     <div className="flex items-start justify-between gap-2">
                       <p className="min-w-0 text-sm font-medium text-foreground">{task.title}</p>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        aria-label="Delete task"
-                        className="shrink-0"
-                        onClick={() => setTasks(tasks.filter((t) => t.id !== task.id))}
-                      >
-                        <Trash2 className="size-4" />
-                      </Button>
+                      <div className="flex shrink-0 items-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label={
+                            task.deadline
+                              ? "Add to Google Calendar"
+                              : "Add a deadline to enable Add to Google Calendar"
+                          }
+                          title={
+                            task.deadline
+                              ? "Add to Google Calendar"
+                              : "Add a deadline first to enable this"
+                          }
+                          disabled={!task.deadline}
+                          onClick={() => addToGoogleCalendar(task)}
+                        >
+                          <CalendarPlus className="size-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label="Delete task"
+                          onClick={() => setTasks(tasks.filter((t) => t.id !== task.id))}
+                        >
+                          <Trash2 className="size-4" />
+                        </Button>
+                      </div>
                     </div>
                     <div className="mt-2 flex flex-wrap items-center gap-2">
                       <span
